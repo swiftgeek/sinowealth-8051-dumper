@@ -19,13 +19,29 @@
 
 #include "config.h"
 #include "jtag.h"
+#include "serial.h"
 
 JTAG::JTAG()
 {
+	DDRD &= ~_BV(VREF);
 	DDRD &= ~_BV(TDO);
 	DDRD |= _BV(TDI);
 	DDRD |= _BV(TMS);
 	DDRD |= _BV(TCK);
+
+	// Do not power the target via I/O leakage
+	clrBit(VREF);
+	clrBit(TCK);
+	clrBit(TDI);
+	clrBit(TMS);
+	// Wait for Vref since we don't have reset pin - this is
+	// an alternative that does not require power switch/relay.
+	// TODO: Power cycle via high side switch/relay
+	serialWrite("Waiting for Vref to get high - enable power to target manually:\r\n");
+	while (! getBit(VREF)) {
+		_delay_us(100);
+	}
+  serialWrite("Vref is now high - resuming\r\n");
 
 	clrBit(TDO);
 	setBit(TCK);
