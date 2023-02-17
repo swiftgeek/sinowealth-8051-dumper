@@ -20,7 +20,7 @@
 #include "config.h"
 #include "jtag.h"
 
-JTAG::JTAG()
+ICP::ICP()
 {
 	DDRD &= ~_BV(TDO);
 	DDRD |= _BV(TDI);
@@ -98,7 +98,7 @@ JTAG::JTAG()
 	m_mode = 1;
 }
 
-void JTAG::reset()
+void ICP::reset()
 {
 	if (m_mode == 0)
 		return;
@@ -131,7 +131,7 @@ void JTAG::reset()
 	m_mode = 1;
 }
 
-void JTAG::switchMode(uint8_t mode)
+void ICP::switchMode(uint8_t mode)
 {
 	if (m_mode == mode)
 		return;
@@ -165,7 +165,7 @@ void JTAG::switchMode(uint8_t mode)
 	}
 }
 
-bool JTAG::check() const
+bool ICP::check() const
 {
 	clrBit(TCK);
 
@@ -182,13 +182,13 @@ bool JTAG::check() const
 	return (b == 0x69);
 }
 
-void JTAG::ping() const
+void ICP::ping() const
 {
 	sendData8(0x49);
 	sendData8(0xFF);
 }
 
-void JTAG::readFlash(uint8_t* buffer, uint32_t address, bool customBlock)
+void ICP::readFlash(uint8_t* buffer, uint32_t address, bool customBlock)
 {
 	reset();
 	switchMode(0x96);
@@ -214,7 +214,7 @@ void JTAG::readFlash(uint8_t* buffer, uint32_t address, bool customBlock)
 		buffer[n] = receiveData8();
 }
 
-void JTAG::sendMode(uint8_t value) const
+void ICP::sendMode(uint8_t value) const
 {
 	for (uint8_t m = 0x80; m; m >>= 1)
 	{
@@ -240,7 +240,7 @@ void JTAG::sendMode(uint8_t value) const
 	_delay_us(2);
 }
 
-void JTAG::sendData8(uint8_t value) const
+void ICP::sendData8(uint8_t value) const
 {
 	for (uint8_t m = 0x80; m; m >>= 1)
 	{
@@ -257,7 +257,7 @@ void JTAG::sendData8(uint8_t value) const
 	clrBit(TDI);
 }
 
-uint8_t JTAG::receiveData8() const
+uint8_t ICP::receiveData8() const
 {
 	uint8_t value = 0;
 	for (uint8_t m = 1; m; m <<= 1)
@@ -273,7 +273,7 @@ uint8_t JTAG::receiveData8() const
 	return value;
 }
 
-void JTAG::pulseClock() const
+void ICP::pulseClock() const
 {
 	_delay_us(1);
 	setBit(TCK);
@@ -281,7 +281,7 @@ void JTAG::pulseClock() const
 	clrBit(TCK);
 }
 
-void JTAG::pulseClocks(uint8_t count) const
+void ICP::pulseClocks(uint8_t count) const
 {
 	while (count-- > 0)
 		pulseClock();

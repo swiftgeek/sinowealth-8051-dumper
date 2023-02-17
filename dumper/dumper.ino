@@ -25,17 +25,17 @@ int main()
 	serialInit();
 	serialWrite("\r\nSinoWealth 8051-based MCU flash dumper\r\n");
 
-	JTAG jtag;
-	jtag.switchMode(150);
+	ICP icp;
+	icp.switchMode(150);
 
-	if (jtag.check())
+	if (icp.check())
 	{
 		serialWrite("Connection established\r\n");
 
 #if CHIP_PRODUCT_BLOCK == 1 && CHIP_CUSTOM_BLOCK == 3
 		serialWrite("\r\nDumping part number:\r\n");
 
-		jtag.readFlash((uint8_t*)&buffer, 0x1200, true);
+		icp.readFlash((uint8_t*)&buffer, 0x1200, true);
 		for (uint8_t n = 0; n < 5; ++n)
 			serialWriteHex(buffer[n + 9]);
 		serialWrite("\r\n");
@@ -45,7 +45,7 @@ int main()
 
 		for (uint32_t a = 0; a < CHIP_FLASH_SIZE; a += 16)
 		{
-			jtag.readFlash((uint8_t*)&buffer, a, false);
+			icp.readFlash((uint8_t*)&buffer, a, false);
 			for (auto n : buffer)
 				serialWriteHex(n);
 			serialWrite("\r\n");

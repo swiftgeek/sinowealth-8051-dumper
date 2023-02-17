@@ -23,10 +23,10 @@
 #define setBit(b) (PORTD |= _BV(b))
 #define getBit(b) (PIND & _BV(b))
 
-class JTAG
+class ICP
 {
 public:
-	JTAG();
+	ICP();
 
 	static const uint8_t TDO = 2;	// D2
 	static const uint8_t TMS = 3;	// D3
