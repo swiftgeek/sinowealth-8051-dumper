@@ -255,14 +255,15 @@ void ICP::sendData8(uint8_t value) const
 		pulseClock();
 	}
 
-	pulseClock();
-
 	clrBit(TDI);
+
+	pulseClock();
 }
 
 uint8_t ICP::receiveData8() const
 {
 	uint8_t value = 0;
+	clrBit(TDI);
 	for (uint8_t m = 1; m; m <<= 1)
 	{
 		pulseClock();
