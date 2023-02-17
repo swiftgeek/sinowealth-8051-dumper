@@ -77,7 +77,7 @@ JTAG::JTAG()
 	clrBit(TCK);
 	_delay_us(2);
 
-	sendMode(150);
+	sendMode(0x96);
 
 	setBit(TCK);
 	_delay_us(2);
@@ -103,7 +103,7 @@ void JTAG::reset()
 	if (m_mode == 0)
 		return;
 
-	if (m_mode == 165)
+	if (m_mode == 0xA5)
 	{
 		setBit(TMS);
 
@@ -146,7 +146,7 @@ void JTAG::switchMode(uint8_t mode)
 
 	sendMode(m_mode);
 
-	if (m_mode == 150)
+	if (m_mode == 0x96)
 	{
 		_delay_us(800);
 		setBit(TCK);
@@ -154,7 +154,7 @@ void JTAG::switchMode(uint8_t mode)
 
 		ping();
 	}
-	else if (m_mode == 165)
+	else if (m_mode == 0xA5)
 	{
 		setBit(TMS);
 		pulseClocks(6);
@@ -191,7 +191,7 @@ void JTAG::ping() const
 void JTAG::readFlash(uint8_t* buffer, uint32_t address, bool customBlock)
 {
 	reset();
-	switchMode(150);
+	switchMode(0x96);
 
 #if CHIP_TYPE != 1
 	sendData8(0x46);
