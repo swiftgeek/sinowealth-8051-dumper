@@ -202,13 +202,14 @@ void ICP::readFlash(uint8_t* buffer, uint32_t address, bool customBlock)
 	sendData8(0xFF);
 #endif
 
-	sendData8(ICP_ADDRESS_LOW);
-	sendData8(address & 0x000000FF);
-	sendData8(ICP_ADDRESS_HIGH);
-	sendData8((address & 0x0000FF00) >> 8);
+	sendData8(ICP_ADDRESS_7B0);
+	sendData8((address & ICP_ADDRESS_7B0_MASK) >> ICP_ADDRESS_7B0_SHIFT);
+	sendData8(ICP_ADDRESS_15B8);
+	sendData8((address & ICP_ADDRESS_15B8_MASK) >> ICP_ADDRESS_15B8_SHIFT);
 #if CHIP_TYPE == 4 || CHIP_TYPE == 7
-	sendData8(0x4C); // TODO: another ICP_ opcode
-	sendData8((address & 0x00FF0000) >> 16);
+	// Chips having more than 15 address lines for flash
+	sendData8(ICP_ADDRESS_23B16);
+	sendData8((address & ICP_ADDRESS_23B16_MASK) >> ICP_ADDRESS_23B16_SHIFT);
 #endif
 
 	sendData8(customBlock ? ICP_READ_CUSTOM_BLOCK : ICP_READ);
