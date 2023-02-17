@@ -19,6 +19,7 @@
 
 #include "config.h"
 #include "jtag.h"
+#include "icp_opcodes.h"
 
 ICP::ICP()
 {
@@ -169,13 +170,13 @@ bool ICP::check() const
 {
 	clrBit(TCK);
 
-	sendData8(0x40);
+	sendData8(0x40); // Another variant of mode switch related bytes
 	sendData8(0x69);
 	sendData8(0x41);
-	sendData8(0xFF);
+	sendData8(0xFF); // This 0xFFFF will end mode switch
 	sendData8(0xFF);
 
-	sendData8(0x43);
+	sendData8(0x43); // TODO: another ICP_ opcode
 	auto b = receiveData8();
 	receiveData8();
 
@@ -184,7 +185,7 @@ bool ICP::check() const
 
 void ICP::ping() const
 {
-	sendData8(0x49);
+	sendData8(0x49);  // TODO: another ICP_ opcode
 	sendData8(0xFF);
 }
 
@@ -194,21 +195,23 @@ void ICP::readFlash(uint8_t* buffer, uint32_t address, bool customBlock)
 	switchMode(0x96);
 
 #if CHIP_TYPE != 1
+	// This probably still belongs to switchMode(), seems to take two arguments?
+	// May be not specific to reads
 	sendData8(0x46);
 	sendData8(0xFE);
 	sendData8(0xFF);
 #endif
 
-	sendData8(0x40);
+	sendData8(ICP_ADDRESS_LOW);
 	sendData8(address & 0x000000FF);
-	sendData8(0x41);
+	sendData8(ICP_ADDRESS_HIGH);
 	sendData8((address & 0x0000FF00) >> 8);
 #if CHIP_TYPE == 4 || CHIP_TYPE == 7
-	sendData8(0x4C);
+	sendData8(0x4C); // TODO: another ICP_ opcode
 	sendData8((address & 0x00FF0000) >> 16);
 #endif
 
-	sendData8(customBlock ? 0x4A : 0x44);
+	sendData8(customBlock ? ICP_READ_CUSTOM_BLOCK : ICP_READ);
 
 	for (uint8_t n = 0; n < 16; ++n)
 		buffer[n] = receiveData8();
