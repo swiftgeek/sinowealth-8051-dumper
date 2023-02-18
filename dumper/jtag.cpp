@@ -78,7 +78,7 @@ ICP::ICP()
 	clrBit(TCK);
 	_delay_us(2);
 
-	sendMode(0x96);
+	sendMode(MODE_ICP);
 
 	setBit(TCK);
 	_delay_us(2);
@@ -104,7 +104,7 @@ void ICP::reset()
 	if (m_mode == 0)
 		return;
 
-	if (m_mode == 0xA5)
+	if (m_mode == 0xA5) // TODO: Unknown mode 0xA5
 	{
 		setBit(TMS);
 
@@ -147,7 +147,7 @@ void ICP::switchMode(uint8_t mode)
 
 	sendMode(m_mode);
 
-	if (m_mode == 0x96)
+	if (m_mode == MODE_ICP)
 	{
 		_delay_us(800);
 		setBit(TCK);
@@ -155,7 +155,7 @@ void ICP::switchMode(uint8_t mode)
 
 		ping();
 	}
-	else if (m_mode == 0xA5)
+	else if (m_mode == 0xA5) // TODO: Unknown mode 0xA5
 	{
 		setBit(TMS);
 		pulseClocks(6);
@@ -192,7 +192,7 @@ void ICP::ping() const
 void ICP::readFlash(uint8_t* buffer, uint32_t address, bool customBlock)
 {
 	reset();
-	switchMode(0x96);
+	switchMode(MODE_ICP);
 
 #if CHIP_TYPE != 1
 	// This probably still belongs to switchMode(), seems to take two arguments?

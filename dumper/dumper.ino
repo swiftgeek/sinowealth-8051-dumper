@@ -15,6 +15,7 @@
 */
 
 #include "jtag.h"
+#include "icp_opcodes.h"
 #include "serial.h"
 #include "config.h"
 
@@ -26,7 +27,7 @@ int main()
 	serialWrite("\r\nSinoWealth 8051-based MCU flash dumper\r\n");
 
 	ICP icp;
-	icp.switchMode(150);
+	icp.switchMode(MODE_ICP);
 
 	if (icp.check())
 	{
